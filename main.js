@@ -458,6 +458,19 @@
     }, { threshold: 0.18 }).observe(est);
   })();
 
+
+  /* --- image skeletons: clear the shimmer as each image arrives --- */
+  (function () {
+    function done(frame) { frame && frame.classList.add('loaded'); }
+    $$('.figr, .areas__map').forEach(function (frame) {
+      var img = frame.querySelector('img');
+      if (!img) { done(frame); return; }
+      if (img.complete && img.naturalWidth > 0) { done(frame); return; }
+      img.addEventListener('load', function () { done(frame); });
+      img.addEventListener('error', function () { done(frame); });
+    });
+  })();
+
   /* ---------- graceful image failure ---------- */
   $$('img').forEach(function (img) {
     img.addEventListener('error', function () {

@@ -953,3 +953,25 @@ address{font-style:normal}
   .figr img,.proj__fig img,.areas__map img,.phero__bg img{animation:none!important}
   .step.on.from-right,.step.on.from-left{animation:none}
 }
+
+/* =============================================================
+   IMAGE SKELETONS — frames must never read as broken while loading
+   ============================================================= */
+.figr,.areas__map,.split__fig,.stmt__fig,.proc__fig{position:relative}
+.figr::after,.areas__map::after{
+  content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(100deg,var(--sand) 28%,#F5F0E8 48%,var(--sand) 68%);
+  background-size:240% 100%;
+  animation:shim 1.7s linear infinite;
+  transition:opacity .55s var(--e)}
+.figr.loaded::after,.areas__map.loaded::after{opacity:0;animation:none}
+.areas__map::after{background:linear-gradient(100deg,var(--sand) 28%,#F5F0E8 48%,var(--sand) 68%);
+  background-size:240% 100%}
+.areas__map.loaded::after{
+  background:linear-gradient(to top,rgba(23,22,20,.34),rgba(23,22,20,0) 55%);
+  background-size:auto;opacity:1;animation:none}
+@keyframes shim{from{background-position:150% 0}to{background-position:-150% 0}}
+.figr img,.areas__map img{position:relative;z-index:2}
+@media (prefers-reduced-motion:reduce){
+  .figr::after,.areas__map::after{animation:none}
+}
