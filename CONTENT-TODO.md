@@ -1,49 +1,57 @@
-# A&P Remodeling — content to replace before/after launch
+# What still needs real data
 
-Everything below is deliberately left empty or marked. Nothing on the site claims a
-license number, review count, years in business, warranty, award or project count,
-because none of that was verifiable from the source material. Fill these in and the
-site gets noticeably stronger.
+Nothing on this site is invented. That means a few places are deliberately
+empty rather than filled with plausible-sounding text. Each one makes the
+site measurably stronger the moment you have the real answer.
 
-## 1. Credentials strip (index.html — search `EDIT ME`)
-A commented-out `VERIFIED-CREDENTIALS VARIANT` block sits directly under the live strip.
-Fill in and swap once you can verify:
-- CSLB license number
-- Insurance (general liability / workers' comp)
-- Google rating + review count
-- Years in business / "serving Los Angeles since ____"
+## 1. Credentials  (`build.py` → `trust()`, search `EDIT ME`)
+The strip under the hero shows only what A&P has published about itself.
+Add, once you can evidence them:
+- CSLB licence number
+- Liability + workers' compensation insurance
+- Google rating and review count
+- Years in business
 - Workmanship warranty terms
-- Projects completed
 
-## 2. Reviews (index.html — section `#reviews`)
-Currently an honest empty state. A `REAL REVIEWS TEMPLATE` is commented out beneath it.
-Only paste reviews people actually wrote — name, neighborhood, project type, rating, text.
+## 2. Reviews  (not present)
+There is no reviews section, on purpose. A&P has a Yelp page but no reviews
+were verifiable, and a section saying "reviews coming soon" advertises the
+gap. Collect three real reviews (name, neighborhood, project type, text) and
+a testimonial section can be added in minutes.
 
-## 3. Project cards (index.html — section `#projects`)
-The photographs are licensed stock and are labelled as reference imagery on the page.
-Replace each `<img>` with real A&P job photography and the disclaimer paragraph
-(`.projnote`) can be deleted. Card structure supports: image, category tag, neighborhood
-tag, title, description, scope list.
+## 3. Owner / founder  (`build.py` → `page_home()` and `page_about()`)
+Both carry a placeholder that reads "Add owner name". Replace with the real
+name, role and a portrait photograph. This is the single highest-value
+addition on the whole site — a face converts better than any copy.
 
-## 4. Before / after (index.html — section `#beforeafter`)
-Swap the two images for a real matched pair from one job, then update the
-`.ba__meta` list (location, work performed) and remove the "reference imagery" note.
+## 4. Project detail  (`build.py` → `PROJECTS`)
+Photographs are real. `location`, `materials`, `timeline`, `budget`,
+`condition`, `scope` and `solution` are `None` and therefore invisible.
+Fill them in per project and the cards and case studies populate themselves.
 
-## 5. Business hours + social (index.html footer — search `EDIT ME`)
-Add once confirmed. If you add hours, also add `openingHoursSpecification` to the
-JSON-LD block in `<head>`.
+## 5. Before / after  (`build.py` → `BEFORE_AFTER = None`)
+The component is built and styled. It is switched off because there is no
+matched pair from a single job — pairing two different houses would
+misrepresent the work. Supply one before and one after photo of the same
+property and set:
 
-## 6. Form delivery (main.js — search `BUSINESS_EMAIL`)
-The estimate form currently opens a pre-filled SMS to 310-633-5777. Set
-`BUSINESS_EMAIL = 'you@aproofla.com'` and it switches to email instead. For a real
-inbox + photo attachments, point the form at a service like Formspree or Basin —
-that is a ~10 line change in `submit()`.
+    BEFORE_AFTER = dict(before=URL, after=URL, before_alt='…', after_alt='…',
+                        project='…', location='…', work='…')
 
-## 7. Privacy policy (privacy.html)
-Plain-language starting point. Have it reviewed, and update it if you add analytics,
-ad pixels, a CRM or a form backend.
+## 6. Photography hosting  ⚠️ important
+Project photos load from `api.support-usa.com`, where A&P published them.
+If that host changes or goes away, the images break. Download the originals
+and commit them to `/img` in this repo, then update `PHOTO` in `build.py`.
+Self-hosted images are also faster.
 
-## 8. Photography direction (when shooting real jobs)
-Shoot: golden hour exteriors, roof detail close-ups, crews working, before/after pairs
-from the same angle and lens, finished interiors. Landscape 4:3 and portrait 3:4 both
-get used by the layout.
+## 7. Lead delivery  (`main.js` → `LEAD.ENDPOINT`)
+Currently empty, so the form opens a pre-filled text message. Point it at a
+real endpoint and leads arrive in an inbox or CRM with no lost submissions.
+
+## 8. Business hours and social  (`build.py` → `footer()`, search `EDIT ME`)
+Add once confirmed. If you add hours, also add `openingHoursSpecification`
+to `biz_ld()` so they show in Google.
+
+## 9. Legal  (`privacy.html`, `terms.html`)
+Plain-language starting points. Have them reviewed, and update privacy if you
+add analytics, ad pixels, a CRM or a form backend.

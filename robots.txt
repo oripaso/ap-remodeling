@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /privacy
+Disallow: /terms
 
-Sitemap: https://aproofla.com/sitemap.xml
+Sitemap: https://oripaso.github.io/ap-remodeling/sitemap.xml
