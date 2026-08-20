@@ -27,13 +27,42 @@
   var yr = $('#yr'); if (yr) yr.textContent = new Date().getFullYear();
 
   /* ---------- reveal ---------- */
+  var targets = $$('.rv, .lines, .fr, .hero__media');
+
+  /* Reveal WELL before an element reaches the viewport. iOS Safari defers
+     IntersectionObserver callbacks during momentum scrolling, so anything
+     revealed exactly at the viewport edge shows up blank on a fast flick.
+     A generous margin plus the sweep below means content is never late. */
   var io = ('IntersectionObserver' in window) ? new IntersectionObserver(function (es) {
     es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
-  }, { threshold: 0.1, rootMargin: '0px 0px -5% 0px' }) : null;
+  }, { threshold: 0, rootMargin: '500px 0px 500px 0px' }) : null;
 
-  var targets = $$('.rv, .lines, .fr, .hero__media');
   if (io) targets.forEach(function (el) { io.observe(el); });
   else targets.forEach(function (el) { el.classList.add('in'); });
+
+  /* Failsafe: anything actually on screen is visible, observer or not. */
+  var sweeping = false;
+  function sweep() {
+    if (sweeping) return;
+    sweeping = true;
+    requestAnimationFrame(function () {
+      sweeping = false;
+      var h = window.innerHeight, left = false;
+      for (var n = 0; n < targets.length; n++) {
+        var el = targets[n];
+        if (el.classList.contains('in')) continue;
+        left = true;
+        var r = el.getBoundingClientRect();
+        if (r.top < h + 240 && r.bottom > -240) { el.classList.add('in'); if (io) io.unobserve(el); }
+      }
+      if (!left) window.removeEventListener('scroll', sweep);
+    });
+  }
+  window.addEventListener('scroll', sweep, { passive: true });
+  window.addEventListener('resize', sweep);
+  window.addEventListener('pageshow', sweep);
+  window.addEventListener('load', sweep);
+  sweep();
 
   requestAnimationFrame(function () {
     $$('.hero__media, .hero .lines, .hero .rv').forEach(function (el) { el.classList.add('in'); });
