@@ -377,6 +377,74 @@
     render();
   })();
 
+
+  /* ---------- disciplines: snap carousel with progress dots (mobile) ---------- */
+  (function () {
+    var track = $('.disc');
+    if (!track) return;
+    var cards = $$('.disc__i', track);
+    if (cards.length < 2) return;
+
+    var dots = document.createElement('div');
+    dots.className = 'dots';
+    dots.setAttribute('role', 'group');
+    dots.setAttribute('aria-label', 'Service categories');
+
+    cards.forEach(function (card, n) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      var h = card.querySelector('.disc__n');
+      b.setAttribute('aria-label', 'Go to ' + (h ? h.textContent.split('/').pop().trim() : 'slide ' + (n + 1)));
+      b.setAttribute('aria-current', n === 0 ? 'true' : 'false');
+      b.addEventListener('click', function () {
+        track.scrollTo({ left: card.offsetLeft - track.offsetLeft, behavior: reduce ? 'auto' : 'smooth' });
+      });
+      dots.appendChild(b);
+    });
+    track.parentNode.insertBefore(dots, track.nextSibling);
+
+    var queued = false;
+    track.addEventListener('scroll', function () {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(function () {
+        queued = false;
+        var mid = track.scrollLeft + track.clientWidth / 2, best = 0, bd = Infinity;
+        cards.forEach(function (c, n) {
+          var d = Math.abs((c.offsetLeft - track.offsetLeft) + c.offsetWidth / 2 - mid);
+          if (d < bd) { bd = d; best = n; }
+        });
+        $$('button', dots).forEach(function (b, n) {
+          b.setAttribute('aria-current', n === best ? 'true' : 'false');
+        });
+      });
+    }, { passive: true });
+  })();
+
+  /* ---------- hero + photo drift fallback where scroll timelines are missing ---------- */
+  (function () {
+    if (reduce) return;
+    if (window.CSS && CSS.supports && CSS.supports('animation-timeline', 'view()')) return;
+    var hero = $('.hero__media img'), inner = $('.hero__in');
+    if (!hero) return;
+    var queued = false;
+    function frame() {
+      queued = false;
+      var y = window.pageYOffset, vh = window.innerHeight;
+      var k = clamp(y / vh, 0, 1);
+      hero.style.transform = 'scale(' + (1 + k * 0.14).toFixed(4) + ') translate3d(0,' + (k * 5).toFixed(2) + '%,0)';
+      if (inner) {
+        var f = clamp((k - 0.38) / 0.62, 0, 1);
+        inner.style.opacity = String(1 - f);
+        inner.style.transform = 'translate3d(0,' + (-f * 40).toFixed(1) + 'px,0)';
+      }
+    }
+    window.addEventListener('scroll', function () {
+      if (queued) return; queued = true; requestAnimationFrame(frame);
+    }, { passive: true });
+    frame();
+  })();
+
   /* ---------- sticky bar retreats at the form ---------- */
   (function () {
     var bar = $('#mbar'), zone = $('#start');
